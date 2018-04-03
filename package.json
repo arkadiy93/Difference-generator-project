@@ -10,26 +10,34 @@
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublishOnly": "npm run build",
-    "eslint": "eslint"
+    "eslint": "eslint",
+    "test": "jest"
   },
   "files": [
     "dist"
   ],
   "author": "Arkadiy Stepanov",
   "license": "ISC",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "devDependencies": {
     "babel-cli": "*",
-    "babel-core": "*",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
+    "babel-jest": "^22.4.3",
     "babel-preset-env": "*",
     "babel-preset-stage-0": "*",
     "eslint": "^4.18.1",
     "eslint-config-airbnb-base": "*",
     "eslint-plugin-flowtype": "^2.46.1",
     "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jest": "^21.13.0"
+    "eslint-plugin-jest": "^21.13.0",
+    "jest": "^22.4.3",
+    "regenerator-runtime": "^0.11.1"
   },
   "dependencies": {
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "lodash": "^4.17.5"
   }
 }
