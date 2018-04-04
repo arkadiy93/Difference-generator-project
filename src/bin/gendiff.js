@@ -2,8 +2,6 @@
 import program from 'commander';
 import genDiff from '../';
 
-export default (path1, path2) => genDiff(path1, path2);
-
 program
   .version('0.0.1')
   .arguments('<firstConfig> <secondConfig>')
