@@ -1,16 +1,17 @@
 import { safeLoad } from 'js-yaml';
-import { _ as lodash } from 'lodash';
+import ini from 'ini';
 
+const parsers = {
+  '.json': JSON.parse,
+  '.yaml': safeLoad,
+  '.yml': safeLoad,
+  '.ini': ini.parse,
+};
 
-const parsers = [
-  {
-    type: '.yml',
-    parse: file => safeLoad(file),
-  },
-  {
-    type: '.json',
-    parse: file => JSON.parse(file),
-  },
-];
-
-export default format => lodash.find(parsers, ({ type }) => type === format);
+export default format => (data) => {
+  const parse = parsers[format];
+  if (!parse) {
+    throw new Error(`unkown format: ${format}`);
+  }
+  return parse(data);
+};
