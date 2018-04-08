@@ -26,7 +26,7 @@ const parseToAst = (config1, config2) => {
 };
 
 
-const genDiff = (file1, file2, format = 'json') => {
+const genDiff = (file1, file2, format = 'tree') => {
   const fileType = path.extname(file1);
   const parser = getParser(fileType);
 
