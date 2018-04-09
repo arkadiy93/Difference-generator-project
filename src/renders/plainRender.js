@@ -2,27 +2,26 @@ import { isObject } from 'lodash';
 
 
 const strings = {
-  updated: (key, value, oldValue) => {
+  updated: (key, { value, oldValue }) => {
     const newValue = isObject(value) ? 'complex value' : `${value}`;
     const removedValue = isObject(oldValue) ? 'complex value' : `${oldValue}`;
-    return `Property '${key}' was updated. From ${removedValue} to ${newValue}\n`;
+    return `Property '${key}' was updated. From ${removedValue} to ${newValue}`;
   },
-  deleted: key => `Property '${key}' was removed\n`,
-  added: (key, value) => {
+  deleted: key => `Property '${key}' was removed`,
+  added: (key, { value }) => {
     const newValue = isObject(value) ? 'complex value' : `value: ${value}`;
-    return `Property '${key}' was added with ${newValue}\n`;
+    return `Property '${key}' was added with ${newValue}`;
   },
-  unchanged: () => '',
+  nested: (path, node, renderFunction) => `${renderFunction(node.children, `${path}.`)}`,
 };
 
+const filterUnchanged = ast => ast.filter(node => !(node.type === 'unchanged'));
+
 const plainRender = (ast, pathToKey = '') =>
-  ast.reduce((acc, { children = [], ...rest }) => {
-    if (rest.type === 'nested') {
-      return `${acc}${plainRender(children, `${pathToKey}${rest.key}.`)}`;
-    }
-    const allPath = `${pathToKey}${rest.key}`;
-    const getString = strings[rest.type];
-    return `${acc}${getString(allPath, rest.value, rest.oldValue)}`;
-  }, '');
+  filterUnchanged(ast).map((node) => {
+    const allPath = `${pathToKey}${node.key}`;
+    const getString = strings[node.type];
+    return [getString(allPath, node, plainRender)];
+  }).join('\n');
 
 export default plainRender;

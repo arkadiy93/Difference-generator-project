@@ -1,4 +1,4 @@
-import { get, keys } from 'lodash';
+import { get, keys, flatten } from 'lodash';
 
 const objectToString = (value, emptySpace) => {
   if (value.length === 0) {
@@ -17,7 +17,7 @@ const stringify = {
 
 const parserTypes = {
   nested: (key, oldValue, value, emptySpace, fun, children) =>
-    `${' '.repeat(emptySpace + 2)}${key}: {${fun(children, emptySpace + 4)}\n${' '.repeat(emptySpace + 2)}}`,
+    `${' '.repeat(emptySpace + 2)}${key}: {\n${fun(children, emptySpace + 4)}\n${' '.repeat(emptySpace + 2)}}`,
   added: (key, oldValue, value, emptySpace) => {
     const type = typeof (value);
     const getString = (get(stringify, type, stringify.otherType));
@@ -39,7 +39,7 @@ const parserTypes = {
 
     const getString1 = (get(stringify, type1, stringify.otherType));
     const getString2 = (get(stringify, type2, stringify.otherType));
-    return `${getString1('-', key, oldValue, emptySpace)}\n${getString2('+', key, value, emptySpace)}`;
+    return [`${getString1('-', key, oldValue, emptySpace)}`, `${getString2('+', key, value, emptySpace)}`].join('\n');
   },
 };
 
@@ -49,13 +49,10 @@ const addToString = (node, emptySpace, fun) => {
 };
 
 
-const renderAst = (ast) => {
-  const renderProcess = (astData, emptySpace) => {
-    const str = astData.reduce((acc, node) =>
-      `${acc}\n${addToString(node, emptySpace, renderProcess)}`, '');
-    return str;
-  };
-  return `{${renderProcess(ast, 2)}\n}`;
+const render = (ast, emptySpace = 2) => {
+  const astArray = ast.map(node =>
+    [addToString(node, emptySpace, render)]);
+  return flatten(astArray).join('\n');
 };
 
-export default renderAst;
+export default ast => `{\n${render(ast)}\n}`;
